@@ -1,0 +1,55 @@
+<Sysmon schemaversion="4.91">
+  <!-- Minimal configuration for RansomGuard-X feature extraction -->
+  <HashAlgorithms>MD5</HashAlgorithms>
+  <EventFiltering>
+    <!-- Event ID 1: Process Creation (Child processes, relationships) -->
+    <ProcessCreate onmatch="include">
+      <!-- Exclude extremely noisy system processes, include everything else -->
+      <Image condition="exclude">C:\Windows\System32\svchost.exe</Image>
+    </ProcessCreate>
+
+    <!-- Event ID 3: Network Connection (Outbound connections) -->
+    <NetworkConnect onmatch="include">
+      <Initiated condition="is">true</Initiated>
+    </NetworkConnect>
+
+    <!-- Event ID 5: Process Terminated -->
+    <ProcessTerminate onmatch="include">
+      <!-- Track termination of all processes for rate calculation -->
+      <Image condition="exclude">C:\Windows\System32\svchost.exe</Image>
+    </ProcessTerminate>
+
+    <!-- Event ID 7: Image Loaded (DLLs loaded) -->
+    <ImageLoad onmatch="include">
+      <!-- Only capture unsigned images to reduce extreme load volume while preserving required features -->
+      <Signed condition="is">false</Signed>
+    </ImageLoad>
+
+    <!-- Event ID 8: CreateRemoteThread (Injection detection) -->
+    <CreateRemoteThread onmatch="include">
+      <!-- Include all remote threads for injection tracking -->
+      <TargetImage condition="exclude">C:\Windows\System32\svchost.exe</TargetImage>
+    </CreateRemoteThread>
+
+    <!-- Event ID 10: ProcessAccess (Cross-process memory access) -->
+    <ProcessAccess onmatch="include">
+      <!-- Include suspicious access rights -->
+      <GrantedAccess condition="is">0x1F0FFF</GrantedAccess>
+    </ProcessAccess>
+
+    <!-- Event ID 11: File Create (File dropping, unique extensions) -->
+    <FileCreate onmatch="exclude">
+      <Image condition="is">C:\Windows\System32\svchost.exe</Image>
+    </FileCreate>
+
+    <!-- Event ID 12, 13, 14: Registry Create/Value Set/Rename -->
+    <RegistryEvent onmatch="exclude">
+      <Image condition="is">C:\Windows\System32\svchost.exe</Image>
+    </RegistryEvent>
+    
+    <!-- Event ID 26: File Delete Logged -->
+    <FileDeleteDetected onmatch="exclude">
+      <Image condition="is">C:\Windows\System32\svchost.exe</Image>
+    </FileDeleteDetected>
+  </EventFiltering>
+</Sysmon>

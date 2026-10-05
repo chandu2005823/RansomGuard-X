@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+env/
+.env/
+
+# Datasets and Large Files
+*.csv
+*.json
+*.log
+*.pkl
+*.model
+*.h5
+*.pt
+*.bin
+5_mlran_dataset/
+6_experiments/
+1_Data/
+2_Preprocessing/
+3_Feature_Selection/
+4_Model_Training/
+
+# OS generated files
+.DS_Store
+Thumbs.db
